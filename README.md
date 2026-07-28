@@ -6,4 +6,3 @@
 
 ![Core stack](https://skillicons.dev/icons?i=ts,js,nodejs,nestjs,react,nextjs,postgres,supabase,gcp,docker,git,github,vercel,obsidian&theme=dark&perline=14)
 
-> From signal to system. From session to memory.
