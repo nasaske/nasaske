@@ -15,13 +15,23 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "assets" / "nasaske-stack.svg"
 
-SPECIALTIES = [
-    "WORKFLOW AUTOMATION",
-    "RPA",
-    "AI AGENTS",
-    "API INTEGRATIONS",
-    "WEB SCRAPING",
-    "FULL-STACK SYSTEMS",
+SPECIALTY_ROWS = [
+    [
+        "WORKFLOW AUTOMATION",
+        "RPA",
+        "AI AGENTS",
+        "API INTEGRATIONS",
+        "WEB SCRAPING",
+        "FULL-STACK SYSTEMS",
+    ],
+    [
+        "MODULAR MONOLITH",
+        "CQRS",
+        "CLEAN ARCHITECTURE",
+        "EVENT-DRIVEN",
+        "REST APIS",
+        "WEBHOOKS",
+    ],
 ]
 
 SECTIONS = [
@@ -46,12 +56,23 @@ SECTIONS = [
         ],
     ),
     (
-        "WEB + BACKEND",
+        "FRONT-END + UI",
         [
-            ("NESTJS", "NestJS", "nestjs", "#E0234E"),
             ("REACT", "React", "react", "#61DAFB"),
             ("NEXT.JS", "Next.js", "nextdotjs", "#F2F2EE"),
-            ("VERCEL", "Vercel", "vercel", "#F2F2EE"),
+            ("VITE", "Vite", "vite", "#646CFF"),
+            ("TAILWIND CSS", "Tailwind_CSS", "tailwindcss", "#06B6D4"),
+            ("TANSTACK QUERY", "TanStack_Query", "reactquery", "#FF4154"),
+            ("FRAMER MOTION", "Framer_Motion", "framer", "#0055FF"),
+        ],
+    ),
+    (
+        "BACK-END + FRAMEWORKS",
+        [
+            ("NESTJS", "NestJS", "nestjs", "#E0234E"),
+            ("PRISMA", "Prisma", "prisma", "#5B7FFF"),
+            ("ZOD", "Zod", "zod", "#3E67B1"),
+            ("REDIS", "Redis", "redis", "#FF4438"),
         ],
     ),
     (
@@ -94,25 +115,38 @@ def fetch_icon_paths(badge: str, logo: str) -> list[str]:
     return paths
 
 
+def specialty_width(label: str) -> float:
+    return max(54.0, len(label) * 7.35 + 30)
+
+
+def badge_width(label: str) -> float:
+    return max(102.0, len(label) * 7.45 + 58)
+
+
 def render_specialties() -> str:
     elements: list[str] = []
-    x = 48.0
-    for index, label in enumerate(SPECIALTIES):
-        width = max(54.0, len(label) * 7.35 + 30)
-        delay = -index * 0.45
-        elements.append(
-            f"""
-    <g transform="translate({x:.1f} 77)">
+    sequence = 0
+    for row_index, labels in enumerate(SPECIALTY_ROWS):
+        widths = [specialty_width(label) for label in labels]
+        total_width = sum(widths) + 10 * (len(widths) - 1)
+        x = (930 - total_width) / 2
+        y = 77 + row_index * 42
+        for label, width in zip(labels, widths):
+            delay = -sequence * 0.45
+            elements.append(
+                f"""
+    <g transform="translate({x:.1f} {y})">
       <rect width="{width:.1f}" height="32" rx="4" fill="#075960">
         <animate attributeName="fill-opacity" values=".78;1;.78"
-                 dur="{5.0 + index * 0.35:.2f}s" begin="{delay:.2f}s"
+                 dur="{5.0 + sequence * 0.16:.2f}s" begin="{delay:.2f}s"
                  repeatCount="indefinite"/>
       </rect>
       <rect width="3" height="32" rx="1.5" fill="#25D0C8"/>
       <text x="16" y="21" class="specialty">{html.escape(label)}</text>
     </g>"""
-        )
-        x += width + 10
+            )
+            x += width + 10
+            sequence += 1
     return "".join(elements)
 
 
@@ -124,7 +158,7 @@ def render_badge(
     color: str,
     paths: list[str],
 ) -> tuple[str, float]:
-    width = max(102.0, len(label) * 7.45 + 58)
+    width = badge_width(label)
     duration = 3.7 + (index % 6) * 0.41
     delay = -(index % 9) * 0.33
     icon_paths = "".join(
@@ -174,21 +208,24 @@ def render_sections() -> str:
     elements: list[str] = []
     badge_index = 0
     for section_index, (section_label, badges) in enumerate(SECTIONS):
-        label_y = 194 + section_index * 78
+        widths = [badge_width(label) for label, *_ in badges]
+        total_width = sum(widths) + 10 * (len(widths) - 1)
+        row_x = (930 - total_width) / 2
+        label_y = 226 + section_index * 78
         badge_y = label_y + 14
         marker_color = badges[0][3]
         elements.append(
             f"""
-    <g transform="translate(48 {label_y})">
+    <g transform="translate({row_x:.1f} {label_y})">
       <circle cx="4" cy="4" r="4" fill="{marker_color}"/>
       <text x="17" y="8" class="category">{html.escape(section_label)}</text>
     </g>"""
         )
 
-        x = 48.0
-        for label, badge, logo, color in badges:
+        x = row_x
+        for (label, badge, logo, color), width in zip(badges, widths):
             paths = fetch_icon_paths(badge, logo)
-            markup, width = render_badge(
+            markup, _ = render_badge(
                 badge_index, x, badge_y, label, color, paths
             )
             elements.append(markup)
@@ -198,8 +235,8 @@ def render_sections() -> str:
 
 
 def main() -> None:
-    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="930" height="520"
-     viewBox="0 0 930 520" role="img" aria-labelledby="title description">
+    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="930" height="630"
+     viewBox="0 0 930 630" role="img" aria-labelledby="title description">
   <title id="title">Nasaske animated specialties and technology stack</title>
   <desc id="description">Animated colored technology icons and specialty tags for AI, automation, software engineering, data, and cloud systems.</desc>
   <defs>
@@ -254,9 +291,9 @@ def main() -> None:
       }}
     </style>
   </defs>
-  <rect width="930" height="520" rx="18" fill="url(#background)"/>
-  <rect width="930" height="520" rx="18" fill="url(#microGrid)"/>
-  <rect x="-280" width="190" height="520" fill="url(#scan)">
+  <rect width="930" height="630" rx="18" fill="url(#background)"/>
+  <rect width="930" height="630" rx="18" fill="url(#microGrid)"/>
+  <rect x="-280" width="190" height="630" fill="url(#scan)">
     <animate attributeName="x" values="-280;1020" dur="10s" repeatCount="indefinite"/>
   </rect>
 
@@ -271,12 +308,12 @@ def main() -> None:
   <path d="M48 62H882" stroke="#8B949E" stroke-opacity=".32"/>
 {render_specialties().lstrip()}
 
-  <g transform="translate(48 144)">
+  <g transform="translate(48 176)">
     <path d="M1 11L8 4L15 11L8 18Z" fill="none" stroke="#25D0C8" stroke-width="1.8"/>
     <circle cx="8" cy="11" r="2.5" fill="#25D0C8"/>
     <text x="26" y="17" class="section-title">CORE STACK</text>
   </g>
-  <path d="M48 171H882" stroke="#8B949E" stroke-opacity=".32"/>
+  <path d="M48 203H882" stroke="#8B949E" stroke-opacity=".32"/>
 {render_sections().lstrip()}
 </svg>
 """
