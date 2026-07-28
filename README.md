@@ -1,5 +1,3 @@
-# Davi Parma
-
 ## Automation & AI Systems Engineer
 
 Agentic systems · APIs · operational automation
