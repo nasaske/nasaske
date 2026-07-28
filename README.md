@@ -1,6 +1,6 @@
-## Automation & AI Systems Engineer
+      ## Automation & AI Systems Engineer
 
-Agentic systems · APIs · operational automation
+      Agentic systems · APIs · operational automation
 
 ![AI Agents](https://img.shields.io/badge/AI_Agents-111111?style=flat-square&logo=openai&logoColor=white)
 ![Multi-Agent Systems](https://img.shields.io/badge/Multi--Agent_Systems-111111?style=flat-square&logo=probot&logoColor=white)
